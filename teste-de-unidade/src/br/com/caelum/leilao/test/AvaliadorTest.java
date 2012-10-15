@@ -1,10 +1,14 @@
 package br.com.caelum.leilao.test;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.*;
+
 import static org.junit.Assert.assertEquals;
 
 import java.io.Serializable;
 import java.util.List;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -42,9 +46,8 @@ public class AvaliadorTest implements Serializable {
 		// executando a acao
 		leiloeiro.avalia(leilao);
 
-		// comparando a saida com o esperado
-		assertEquals(400, leiloeiro.getMaiorLance(), 0.0001);
-		assertEquals(250, leiloeiro.getMenorLance(), 0.0001);
+		assertThat(leiloeiro.getMenorLance(), equalTo(250.0));
+		assertThat(leiloeiro.getMaiorLance(), equalTo(400.0));
 	}
 
 	@Test
@@ -78,15 +81,25 @@ public class AvaliadorTest implements Serializable {
 	public void deveEncontrarOsTresMaioresLances() {
 
 		Leilao leilao = new CriadorDeLeilao().para("Playstation 3 Novo")
-				.lance(joao, 100.0)
-				.lance(maria, 200.0)
-				.lance(joao, 300.0)
-				.lance(maria, 400.0)
-				.constroi();
+				.lance(joao, 100.0).lance(maria, 200.0).lance(joao, 300.0)
+				.lance(maria, 400.0).constroi();
 
 		leiloeiro.avalia(leilao);
 
 		List<Lance> maiores = leiloeiro.getTresMaiores();
-		assertEquals(3, maiores.size());
+		assertThat(maiores, hasItems(
+				new Lance(maria, 400),
+				new Lance(joao, 300),
+				new Lance(maria, 200)
+				));
+	}
+
+	@Test (expected = RuntimeException.class)
+	public void naoDeveAvaliarLeiloesSemNenhumLanceDado() {
+		Leilao leilao = new CriadorDeLeilao().para("Playstation 3 Novo").constroi();
+		
+		leiloeiro.avalia(leilao);
+		
+		Assert.fail();
 	}
 }

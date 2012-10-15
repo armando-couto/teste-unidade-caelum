@@ -6,7 +6,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-
 public class Avaliador implements Serializable {
 
 	private static final long serialVersionUID = 1L;
@@ -16,16 +15,20 @@ public class Avaliador implements Serializable {
 	private List<Lance> maiores;
 
 	public void avalia(Leilao leilao) {
+		// lancando a excecao
+		if (leilao.getLances().size() == 0)
+			throw new RuntimeException(
+					"Não é possível avaliar um leilão sem lances!");
 		for (Lance lance : leilao.getLances()) {
 			if (lance.getValor() > maiorDeTodos)
 				maiorDeTodos = lance.getValor();
 			if (lance.getValor() < menorDeTodos)
 				menorDeTodos = lance.getValor();
 		}
-		pegaOsMaioresNo(leilao);
+		tresMaiores(leilao);
 	}
 
-	private void pegaOsMaioresNo(Leilao leilao) {
+	private void tresMaiores(Leilao leilao) {
 		maiores = new ArrayList<Lance>(leilao.getLances());
 		Collections.sort(maiores, new Comparator<Lance>() {
 			public int compare(Lance o1, Lance o2) {
