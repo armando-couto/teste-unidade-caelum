@@ -15,6 +15,8 @@ public class Leilao {
 	}
 
 	public void propoe(Lance lance) {
+		if (lance.getValor() <= 0)
+			throw new IllegalArgumentException("Valor Inválido");
 		if (lances.isEmpty() || podeDarLance(lance.getUsuario())) {
 			lances.add(lance);
 		}

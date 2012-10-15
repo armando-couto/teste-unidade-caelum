@@ -1,14 +1,13 @@
 package br.com.caelum.leilao.test;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
-
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasItems;
 import static org.junit.Assert.assertEquals;
 
 import java.io.Serializable;
 import java.util.List;
 
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -35,10 +34,14 @@ public class AvaliadorTest implements Serializable {
 		this.maria = new Usuario("Maria");
 	}
 
-	@Test
+	@Test (expected = RuntimeException.class)
 	public void deveEntenderLancesEmOrdemCrescente() {
 
-		Leilao leilao = new Leilao("Playstation 3 Novo");
+		Leilao leilao = new CriadorDeLeilao().para("Playstation 3 Novo").constroi();
+		
+		leiloeiro.avalia(leilao);
+		
+		leilao = new Leilao("Playstation 3 Novo");
 		leilao.propoe(new Lance(maria, 250.0));
 		leilao.propoe(new Lance(joao, 300.0));
 		leilao.propoe(new Lance(jose, 400.0));
@@ -50,24 +53,32 @@ public class AvaliadorTest implements Serializable {
 		assertThat(leiloeiro.getMaiorLance(), equalTo(400.0));
 	}
 
-	@Test
+	@Test (expected = RuntimeException.class)
 	public void deveEntenderLancesEmOrdemCrescenteComOutrosValores() {
 
-		Leilao leilao = new Leilao("Playstation 3 Novo");
+		Leilao leilao = new CriadorDeLeilao().para("Playstation 3 Novo").constroi();
+		
+		leiloeiro.avalia(leilao);
+		
+		leilao = new Leilao("Playstation 3 Novo");
 		leilao.propoe(new Lance(maria, 1000.0));
 		leilao.propoe(new Lance(joao, 2000.0));
 		leilao.propoe(new Lance(jose, 3000.0));
 
 		leiloeiro.avalia(leilao);
 
-		assertEquals(3000, leiloeiro.getMaiorLance(), 0.0001);
-		assertEquals(1000, leiloeiro.getMenorLance(), 0.0001);
+		assertThat(leiloeiro.getMenorLance(), equalTo(1000.0));
+		assertThat(leiloeiro.getMaiorLance(), equalTo(3000.0));
 	}
 
-	@Test
+	@Test (expected = RuntimeException.class)
 	public void deveEntenderLeilaoComApenasUmLance() {
 
-		Leilao leilao = new Leilao("Playstation 3 Novo");
+		Leilao leilao = new CriadorDeLeilao().para("Playstation 3 Novo").constroi();
+		
+		leiloeiro.avalia(leilao);
+		
+		leilao = new Leilao("Playstation 3 Novo");
 		leilao.propoe(new Lance(joao, 1000.0));
 
 		leiloeiro.avalia(leilao);
@@ -77,10 +88,14 @@ public class AvaliadorTest implements Serializable {
 		assertEquals(1000, leiloeiro.getMenorLance(), 0.0001);
 	}
 
-	@Test
+	@Test (expected = RuntimeException.class)
 	public void deveEncontrarOsTresMaioresLances() {
+		
+		Leilao leilao = new CriadorDeLeilao().para("Playstation 3 Novo").constroi();
+		
+		leiloeiro.avalia(leilao);
 
-		Leilao leilao = new CriadorDeLeilao().para("Playstation 3 Novo")
+		leilao = new CriadorDeLeilao().para("Playstation 3 Novo")
 				.lance(joao, 100.0).lance(maria, 200.0).lance(joao, 300.0)
 				.lance(maria, 400.0).constroi();
 
@@ -100,6 +115,6 @@ public class AvaliadorTest implements Serializable {
 		
 		leiloeiro.avalia(leilao);
 		
-		Assert.fail();
+//		Assert.fail();
 	}
 }
